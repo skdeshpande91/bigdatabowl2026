@@ -63,5 +63,5 @@ points(x = paths$rec_x[1], paths$rec_y[1], pch = 16, col = oi_colors[8])
 points(x = paths$ball_land_x[1], paths$ball_land_y[1], pch = 4, col = oi_colors[8])
 
 legend("bottomright", legend = c("Observed Trajectory", "Remaining Trajectory", "Ball Landing", "Receiver Start"), pch = c(16, 1, 4, 16), col = oi_colors[c(1,1,8, 8)])
-legend("topright", legend = c("Simulations w/o Prior Mean", "Our Prior Mean", "Simulations w/ Our Model"), lty = c(1,1), lwd = 2, col = oi_colors[c(8,4, 4)])
+legend("topright", legend = c("Simulations w/ Zero-Mean Prior", "Our Prior Mean", "Simulations w/ Our Model"), lty = c(1,1), lwd = 2, col = oi_colors[c(8,4, 4)])
 dev.off()
