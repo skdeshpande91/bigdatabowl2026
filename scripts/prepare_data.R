@@ -1,8 +1,4 @@
-supplement <- readr::read_csv(file = "supplementary_data.csv")
-
-
-
-# pass_length, dropback_distance, 
+supplement <- readr::read_csv(file = "data/training/supplementary_data.csv")
 
 path_list <- list()
 ff_list <- list()
@@ -15,7 +11,7 @@ for(wk in 1:18){
   }
   
   raw_in <- 
-    readr::read_csv(file = paste0("train/input_2023_w", wk_char, ".csv"))
+    readr::read_csv(file = paste0("data/training/input_2023_w", wk_char, ".csv"))
   rec_in <-
     raw_in |>
     dplyr::filter(player_role == "Targeted Receiver") |>
@@ -52,7 +48,7 @@ for(wk in 1:18){
     unique()
   
   raw_out <-
-    readr::read_csv(file = paste0("train/output_2023_w", wk_char, ".csv")) |>
+    readr::read_csv(file = paste0("data/training/output_2023_w", wk_char, ".csv")) |>
     dplyr::inner_join(y = roles, by = c("game_id", "play_id", "nfl_id")) |>
     dplyr::inner_join(y = n_frame_input, by = c("game_id", "play_id"))
   
@@ -136,4 +132,4 @@ raw_final_frame <- dplyr::bind_rows(ff_list)
 
 
 
-save(raw_path, raw_final_frame, file = "raw_data.RData")
+save(raw_path, raw_final_frame, file = "data/raw_data.RData")
