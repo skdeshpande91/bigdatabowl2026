@@ -8,7 +8,7 @@
 
 
 
-Formally, consider a play with $T$ total frames and for each $t = 1, \ldots, T,$ let $\boldsymbol{r}_{t} = (r^{(x)}_{t}, r^{(y)}_{t})$$ and $\boldsymbol{d}_{t} = (d^{(x)}_{t}, d^{(y)}_{t})$ be the positions of the **r**eceiver and **d**efender at frame $t.$
+Formally, consider a play with $T$ total frames and for each $t = 1, \ldots, T,$ let $\boldsymbol{r}_{t} = (r^{(x)}_{t}, r^{(y)}_{t})$ and $\boldsymbol{d}_{t} = (d^{(x)}_{t}, d^{(y)}_{t})$ be the positions of the **r**eceiver and **d**efender at frame $t.$
 For any indices $t < t'$ let $\boldsymbol{r}_{t:t'} = \left\{ \boldsymbol{r}_{t}, \ldots, \boldsymbol{r}_{t'}\right\}$ be the receiver's trajectory from frame $t$ to frame $t'.$
 We similarly denote the defender's trajectory between frames $t$ and $t'$ 
 
