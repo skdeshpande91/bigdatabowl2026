@@ -10,7 +10,7 @@ get_Sigma <- function(n, sigma = 1/6, tau = 1, D = 10){
   return(Sigma)
 }
 
-get_posterior_params <- function(paths, init_noise = c(0,0,0,0), sigma = 1/6, tau = 1, D = 10){
+get_posterior_params <- function(paths, inform_mean = TRUE, init_noise = c(0,0,0,0), sigma = 1/6, tau = 1, D = 10){
   
   n <- nrow(paths)
   los <- paths$los[1]
@@ -32,14 +32,23 @@ get_posterior_params <- function(paths, init_noise = c(0,0,0,0), sigma = 1/6, ta
   def_x <- paths$def_x - los # defender's X relatie to LOS
   def_y <- paths$def_y - def_y0
   
-  prior_mean <-
-    data.frame(
-      rec_x = rec_x[1] + (rnorm(n = 1, mean = 0, sd = init_noise[1]) + ball_x - los - rec_x[1])/n * seq(0, to = n, length = n),
-      rec_y = rec_y[1] + (rnorm(n = 1, mean = 0, sd = init_noise[2]) + ball_y - rec_y0 - rec_y[1])/n * seq(0, to = n, length = n),
-      def_x = def_x[1] + (rnorm(n = 1, mean = 0, sd = init_noise[3]) + ball_x - los - def_x[1])/n * seq(0, to = n, length = n),
-      def_y = def_y[1] + (rnorm(n = 1, mean = 0, sd = init_noise[4]) + ball_y - def_y0 - def_y[1])/n * seq(0, to = n, length = n))
   
-  
+  if(inform_mean){
+    prior_mean <-
+      data.frame(
+        rec_x = rec_x[1] + (rnorm(n = 1, mean = 0, sd = init_noise[1]) + ball_x - los - rec_x[1])/n * seq(0, to = n, length = n),
+        rec_y = rec_y[1] + (rnorm(n = 1, mean = 0, sd = init_noise[2]) + ball_y - rec_y0 - rec_y[1])/n * seq(0, to = n, length = n),
+        def_x = def_x[1] + (rnorm(n = 1, mean = 0, sd = init_noise[3]) + ball_x - los - def_x[1])/n * seq(0, to = n, length = n),
+        def_y = def_y[1] + (rnorm(n = 1, mean = 0, sd = init_noise[4]) + ball_y - def_y0 - def_y[1])/n * seq(0, to = n, length = n))
+  } else{
+    prior_mean <-
+      data.frame(
+        rec_x = rep(0, times = n),
+        rec_y = rep(0, times = n),
+        def_x = rep(0, times = n),
+        def_y = rep(0, times = n))
+  }
+
   Sigma <- get_Sigma(n, sigma = sigma, tau = tau, D = D)
   post_mean_list <- list()
   post_cov_list <- list()
