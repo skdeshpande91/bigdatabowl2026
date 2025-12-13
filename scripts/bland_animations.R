@@ -12,7 +12,7 @@ paths <-
   raw_path |>
   dplyr::filter(game_id == gid & play_id == pid)
 
-post <- get_posterior_params(paths = paths, init_noise = c(1, 1, 0.5, 0.5), sigma = 1/12, tau = 1)
+post <- get_posterior_params(paths = paths, init_noise = c(1, 1, 0.5, 0.5), sigma = 1/36, tau = 1)
 
 
 n_frames_in <- paths$num_frames_input[1]
@@ -50,8 +50,7 @@ for(ix in 1:(n-1)){
        xlim = x_lim, 
        ylim = y_lim,
        xlab="", xaxt = "n", yaxt = "n", ylab = "", 
-       main = "")
-  #main = paste("Frame", ix))
+       main = paste("Bland Interception: Frame", ix))
   axis(side = 1, at = seq(20, 100, by = 10),
        labels = c(seq(10, 50, by = 10), seq(40, 10, by = -10)))
   
@@ -104,7 +103,8 @@ for(ix in 1:(n-1)){
   png(paste0("bland_animations/probs_", write_ix, ".png"), width = 8, height = 4.5, units = "in", res = 400)
   par(mar = c(3,3,2,1), mgp = c(1.8, 0.5, 0))
   plot(1, type = "n", xlim = c(0,1), ylim = c(0, y_dens_lim), 
-       main = "Forecasted Event Probabilities", xlab = "Prob.", ylab = "Density")
+       main = paste("Bland Interception Forecasted Event Probabilities Frame:", ix), 
+       xlab = "Prob.", ylab = "Density")
   
   c_dens <- test$probs[[ix]][["c_dens"]]
   i_dens <- test$probs[[ix]][["i_dens"]]
@@ -130,7 +130,8 @@ for(ix in 1:(n-1)){
   png(paste0("bland_animations/sep_", write_ix, ".png"), width = 8, height = 4.5, units = "in", res = 400)
   par(mar = c(3,3,2,1), mgp = c(1.8, 0.5, 0))
   plot(1, type = "n", xlim = c(0, n), ylim = c(0, max(test$pred_sep$U95)),
-       xlab = "Frame", ylab = "Separation", main = "Forecasted Final Separation")
+       xlab = "Frame", ylab = "Separation", 
+       main = paste("Bland Interception Forecasted Final Separation: Frame", ix))
   abline(h = test$final_frame[[n]]$def2rec, col = oi_colors[5], lwd = 2, lty = 2)
   
   
