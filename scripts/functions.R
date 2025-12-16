@@ -10,7 +10,10 @@ get_Sigma <- function(n, sigma = 1/6, tau = 1, D = 10){
   return(Sigma)
 }
 
-get_posterior_params <- function(paths, inform_mean = TRUE, init_noise = c(0,0,0,0), sigma = 1/6, tau = 1, D = 10){
+get_posterior_params <- function(paths, inform_mean = TRUE,
+                                 rec_target = NULL,
+                                 def_target = NULL,
+                                 sigma = 1/36, tau = 1, D = 10){
   
   n <- nrow(paths)
   los <- paths$los[1]
@@ -33,22 +36,23 @@ get_posterior_params <- function(paths, inform_mean = TRUE, init_noise = c(0,0,0
   def_y <- paths$def_y - def_y0
   
   
+  prior_mean <-
+    data.frame(rec_x = rep(0, times = n),
+               rec_y = rep(0, times = n),
+               def_x = rep(0, times = n),
+               def_y = rep(0, times = n))
+  
   if(inform_mean){
-    prior_mean <-
-      data.frame(
-        rec_x = rec_x[1] + (rnorm(n = 1, mean = 0, sd = init_noise[1]) + ball_x - los - rec_x[1])/n * seq(0, to = n, length = n),
-        rec_y = rec_y[1] + (rnorm(n = 1, mean = 0, sd = init_noise[2]) + ball_y - rec_y0 - rec_y[1])/n * seq(0, to = n, length = n),
-        def_x = def_x[1] + (rnorm(n = 1, mean = 0, sd = init_noise[3]) + ball_x - los - def_x[1])/n * seq(0, to = n, length = n),
-        def_y = def_y[1] + (rnorm(n = 1, mean = 0, sd = init_noise[4]) + ball_y - def_y0 - def_y[1])/n * seq(0, to = n, length = n))
-  } else{
-    prior_mean <-
-      data.frame(
-        rec_x = rep(0, times = n),
-        rec_y = rep(0, times = n),
-        def_x = rep(0, times = n),
-        def_y = rep(0, times = n))
+    if(is.null(rec_target)) rec_target <- c(ball_x, ball_y)
+    
+    prior_mean$rec_x <- seq(from = rec_x[1], to = rec_target[1] - los, length = n)
+    prior_mean$rec_y <- seq(from = rec_y[1], to = rec_target[2] - rec_y0, length = n)
+    
+    if(is.null(def_target)) def_target <- c(ball_x, ball_y)
+    prior_mean$def_x <- seq(from = def_x[1], to = def_target[1] - los, length = n)
+    prior_mean$def_y <- seq(from = def_y[1], to = def_target[2] - def_y0, length = n)
   }
-
+  
   Sigma <- get_Sigma(n, sigma = sigma, tau = tau, D = D)
   post_mean_list <- list()
   post_cov_list <- list()
@@ -106,7 +110,7 @@ draw_paths <- function(post, paths, n_draws = 500){
   final_frame_list <- list()
   
   for(ix in 1:(n-1)){
-    print(ix)
+    #print(ix)
     rec_x_samples <- MASS::mvrnorm(n = n_draws, mu = post$post_mean[[ix]][["rec_x"]], Sigma = post$post_cov[[ix]])
     rec_y_samples <- MASS::mvrnorm(n = n_draws, mu = post$post_mean[[ix]][["rec_y"]], Sigma = post$post_cov[[ix]])
     def_x_samples <- MASS::mvrnorm(n = n_draws, mu = post$post_mean[[ix]][["def_x"]], Sigma = post$post_cov[[ix]])
@@ -130,7 +134,7 @@ draw_paths <- function(post, paths, n_draws = 500){
         def2rec = sqrt( (def_x - rec_x)^2 + (def_y - rec_y)^2),
         rec2side = ifelse(rec_y <= 27, rec_y, 54-rec_y),
         def2side = ifelse(def_y <= 27, def_y, 54-def_y),
-        rec2goal = 110 - rec_y,
+        rec2goal = 110 - rec_x,
         ball2side = ifelse(ball_land_y <= 27, ball_land_y, 54-ball_land_y))
     
     final_frame_list[[ix]] <- final_frame_samples
@@ -191,4 +195,27 @@ draw_paths <- function(post, paths, n_draws = 500){
   return(list(draws = draws_list, probs = probs_list, ystar = ystar_list, final_frame = final_frame_list,
               max_y_dens = max_y_dens, max_sep = max_sep, max_sep_dens = max_sep_dens, sep_dens = sep_dens_list,
               pred_sep = pred_sep_summary))
+}
+
+plot_field <- function(los, ball_land_x, ball_land_y){
+  
+  x_lim <- c(-27,27)
+  y_lim <- 
+    c(floor(los/10) * 10 - 15, floor(ball_land_x/10) * 10 + 15) - los
+  
+  plot(1, type = "n", xlim = x_lim, ylim = y_lim, xaxt="n", yaxt = "n",
+       xlab = "", ylab = "")
+  axis(side = 2, at = seq(20, 100, by = 10)-los,
+       labels = c(seq(10, 50, by = 10), seq(40, 10, by = -10)),
+       las = 2, tick = FALSE)
+  axis(side = 4, at = seq(20, 100, by = 10)-los,
+       labels = c(seq(10, 50, by = 10), seq(40, 10, by = -10)), 
+       las = 2, tick = FALSE)
+  
+  abline(h = seq(10*floor(los/10) + 5, 105, by = 10) - los, lwd = 0.5)
+  abline(h = seq(10*floor(los/10), 
+                 10*floor(ball_land_x/10) * 10 + 10, by = 10) - los, 
+         lwd = 1)
+  
+  abline(h = 0, col = oi_colors[3], lwd = 2)
 }

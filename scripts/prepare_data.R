@@ -120,7 +120,7 @@ for(wk in 1:18){
       rec2side = ifelse(rec_y <= 27, rec_y, 54-rec_y),
       def2side = ifelse(def_y <= 27, def_y, 54-def_y),
       ball2side = ifelse(ball_land_y <= 27, ball_land_y, 54-ball_land_y),
-      rec2goal = 110 - rec_y,
+      rec2goal = 110 - rec_x,
       pass_result = factor(pass_result, levels = c("IN", "I", "C")))
   path_list[[wk]] <- path
   ff_list[[wk]] <- final_frame
