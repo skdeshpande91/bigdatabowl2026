@@ -42,39 +42,44 @@ We stress that one can replace our simple model with a more sophisticated one (e
 Before describing our Bayesian model of receiver and defender trajectories, we must introduce some notation.
 For simplicity, we only model the trajectories of the targetted receiver and the defender who is closest to the receiver at the time of arrival. 
 Suppose that there are $T$ frames from the time that the ball is snapped ($t = 1$) to the time that the ball arrives in the receivers' vicinity ($t = T$; the final frame of each play in the Big Data Bowl data).
-For each $t \in \{1, 2, \ldots, T\},$ let $\boldsymbol{r}_{t} = (r_{x,t}, r_{y,t})$ be receivers' position in frame $t$ and for each $t < t' \in \{1, 2, \ldots, T\}$ let $\boldsymbol{r}_{t:t'} = \{\boldsymbol{r}_{t}, \ldots, \boldsymbol{r}_{t'}\}$ be the receiver's trajectory between frames $t$ and $t'.$
-We denote the trajectories of the receiver's $x$ and $y$ position between times $t$ and $t'$ with $\boldsymbol{r}_{x,t:t'}$ and $\boldsymbol{r}_{y, t:t'}.$
-We similarly denote the defender's position in frame $t$ and trajectory between $t$ and $t'$ with $\boldsymbol{d}_{t} = (d_{x,t}, d_{y,t})$ $\boldsymbol{d}_{t:t'}.$ 
+For each $t \in \{1, 2, \ldots, T\},$ let $r_{t} = (r_{x,t}, r_{y,t})$ be receivers' position in frame $t$ and for each $t < t' \in \{1, 2, \ldots, T\}$ let $r_{t:t'} = \{ r_{t}, \ldots, r_{t'} \}$ be the receiver's trajectory between frames $t$ and $t'.$
+We denote the trajectories of the receiver's $x$ and $y$ position between times $t$ and $t'$ with $r_{x,t:t'}$ and $r_{y, t:t'}.$
+We similarly denote the defender's position in frame $t$ and trajectory between $t$ and $t'$ with $d_{t} = (d_{x,t}, d_{y,t})$ and $d_{t:t'}.$ 
 
 
 ### Receiver Model
 
 Following [Miller & Bornn (2017)](https://www.lukebornn.com/papers/miller_ssac_2017.pdf) and [Chu et al. (2019)](https://arxiv.org/pdf/1908.02423), we model the receiver's trajectory with a degree-$D$ Bézier curve. 
 That is, if for $u \in [0,1],$ we let $\phi_{d}(u) = \binom{D}{d}u^{d}(1-u)^{D-d}$ be the $d$-th Bernstein polynomial, then we model independently for each $t = 1, \ldots, T$
+
 $$
 \begin{align}
 r_{x,t} &= \mu^{r}_{x,t} + \sum_{d=0}^{D}{\beta^{r}_{x,d}\phi_{d}(t/T)} + \epsilon^{r}_{x,t} \\
-r_{y,t} &= \mu^{r}_{y,t} + \sum_{d=0}^{D}{\beta^{r}_{y,d}\phi_{d}(t/T)} + \epsilon^{r}_{y,t}, \\
+r_{y,t} &= \mu^{r}_{y,t} + \sum_{d=0}^{D}{\beta^{r}_{y,d}\phi_{d}(t/T)} + \epsilon^{r}_{y,t},
 \end{align}
 $$
-where the errors $\epsilon_{x,t}, \epsilon_{y,t}$ are independent $\mathcal{N}(0,\sigma^{2});$ $\boldsymbol{\mu}^{r}_{t} = (\mu^{r}_{x,t}, \mu^{r}_{y,t})$ is a soon-to-be-specified prior mean of the receiver's position at time $t.$ (see below); and the parameters $\boldsymbol{\beta}^{r}_{x} = \{\beta^{r}_{x,0}, \ldots, \beta^{r}_{x,D}\}$ and $\boldsymbol{\beta}^{r}_{y} = \{\beta^{r}_{y,0}, \ldots, \beta^{r}_{y,D}\}$ are to be estimated. The pairs $(\beta^{r}_{x,d}, \beta^{r}_{y,d})$ are the [*control points*](https://en.wikipedia.org/wiki/Control_point_(mathematics)) of the Bézier curve for the receiver's trajectory.
 
-We take a Bayesian approach and specify independent $\mathcal{N}(0,\tau^{2})$ for the $\beta^{r}_{x,t}$'s and $\beta^{r}_{y,t}$'s.
-Under our specified joint probability model for the full receiver trajectory $\boldsymbol{r}_{1:T}$ and the unknown parameters $\boldsymbol{\beta}^{r}_{x}$ and $\boldsymbol{\beta}^{r}_{y},$ the trajectories of the receiver's $x$ and $y$ are *marginally* independent with
+where the errors $\epsilon_{x,t}, \epsilon_{y,t}$ are independent $N(0,\sigma^{2});$ $\mu^r_{t} = (\mu^r_{x,t}, \mu^r_{y,t})$ is a soon-to-be-specified prior mean of the receiver's position at time $t.$ (see below); and the parameters $\beta^r_{x} = \{\beta^r_{x,0}, \ldots, \beta^r_{x,D}\}$ and $\beta^r_{y} = \{\beta^r_{y,0}, \ldots, \beta^r_{y,D}\}$ are to be estimated. The pairs $(\beta^r_{x,d}, \beta^r_{y,d})$ are the [*control points*](https://en.wikipedia.org/wiki/Control_point_(mathematics)) of the Bézier curve for the receiver's trajectory.
+
+We take a Bayesian approach and specify independent $N(0,\tau^{2})$ for the $\beta^r_{x,t}$'s and $\beta^r_{y,t}$'s.
+Under our specified joint probability model for the full receiver trajectory $r_{1:T}$ and the unknown parameters $\beta^r_{x}$ and $\beta^r_{y},$ the trajectories of the receiver's $x$ and $y$ are *marginally* independent with
+
 $$
 \begin{align}
-\boldsymbol{r}_{x,1:T} &\sim  \mathcal{N}_{T}\left( \boldsymbol{\mu}^{r}_{x,1:T}, \Sigma^{r}\right) \\
-\boldsymbol{r}_{y,1:T} &\sim  \mathcal{N}_{T}\left( \boldsymbol{\mu}^{r}_{y,1:T}, \Sigma^{r}\right),
+r_{x,1:T} &\sim  \mathcal{N}_{T}\left( \mu^r_{x,1:T}, \Sigma^r\right) \\
+r_{y,1:T} &\sim  \mathcal{N}_{T}\left( \mu^r_{y,1:T}, \Sigma^r\right),
 \end{align}
 $$
-where $\Phi$ is a $T \times (D+1)$ matrix whose $(t,d)$ entry is $\phi_{d}(t/T)$ and $\Sigma^{r} = \tau^{2}\Phi\Phi^{\top} + \sigma^{2}I.$
+
+where $\Phi$ is a $T \times (D+1)$ matrix whose $(t,d)$ entry is $\phi_{d}(t/T)$ and $\Sigma^r = \tau^{2}\Phi\Phi^{\top} + \sigma^{2}I.$
 
 
 #### Posterior Computation
 
-At frame $t$, we wish to simulate the receiver's remaining trajectory $\boldsymbol{r}_{(t+1):T}$ based on the observed trajectory up until time $t$, $\boldsymbol{r}_{1:t}$ by drawing from the posterior distribution of $\boldsymbol{r}_{(t+1):T} \vert \boldsymbol{r}_{1:t}.$ 
+At frame $t$, we wish to simulate the receiver's remaining trajectory $r_{(t+1):T}$ based on the observed trajectory up until time $t$, $r_{1:t}$ by drawing from the posterior distribution of $r_{(t+1):T} \vert r_{1:t}.$ 
 It turns out that we can compute and simulate from this posterior distribution exactly *without having to resort to a (sometimes) computationally intensive approximations like Markov chain Monte Carlo.*
 Specifically, if we partition $\Sigma^{r}$ into four blocks, separating the first $t$ rows/columns from the second $(T-t)$ rows/columns as
+
 $$
 \Sigma^{r} = 
 \begin{pmatrix}
@@ -82,12 +87,13 @@ $$
 \Sigma_{(t+1):T,1:t} & \Sigma_{(t+1):T, (t+1):T},
 \end{pmatrix}
 $$
+
 then, using standard results about the conditional distributions of multivariate normal distributions, we obtain the posterior distributions
 
 $$
 \begin{align}
-\boldsymbol{r}_{x,(t+1):T} \vert \boldsymbol{r}_{x,1:t} &\sim  \mathcal{N}_{T}\left( \boldsymbol{\mu}^{r}_{x,(t+1):T} + \Sigma_{(t+1):T, 1:t} \Sigma_{1:t, 1:t}^{-1}\left( \boldsymbol{r}_{x,1:t} - \boldsymbol{\mu}^{r}_{x,1:t}\right), \Sigma_{(t+1):T, (t+1):T} - \Sigma_{(t+1):T, 1:t}\Sigma^{-1}_{1:t,1:t}\Sigma_{1:t, (t+1):T}\right) \\
-\boldsymbol{r}_{y,(t+1):T} \vert \boldsymbol{r}_{y,1:t} &\sim  \mathcal{N}_{T}\left( \boldsymbol{\mu}^{r}_{y,(t+1):T} + \Sigma_{(t+1):T, 1:t} \Sigma_{1:t, 1:t}^{-1}\left( \boldsymbol{r}_{y,1:t} - \boldsymbol{\mu}^{r}_{y,1:t}\right), \Sigma_{(t+1):T, (t+1):T} - \Sigma_{(t+1):T, 1:t}\Sigma^{-1}_{1:t,1:t}\Sigma_{1:t, (t+1):T}\right)
+r_{x,(t+1):T} \vert r_{x,1:t} &\sim  N_{T}\left( \mu^{r}_{x,(t+1):T} + \Sigma_{(t+1):T, 1:t} \Sigma_{1:t, 1:t}^{-1}\left( r_{x,1:t} - \mu^{r}_{x,1:t}\right), \Sigma_{(t+1):T, (t+1):T} - \Sigma_{(t+1):T, 1:t}\Sigma^{-1}_{1:t,1:t}\Sigma_{1:t, (t+1):T}\right) \\
+r_{y,(t+1):T} \vert r_{y,1:t} &\sim  N_{T}\left( \mu^{r}_{y,(t+1):T} + \Sigma_{(t+1):T, 1:t} \Sigma_{1:t, 1:t}^{-1}\left( r_{y,1:t} - \mu^{r}_{y,1:t}\right), \Sigma_{(t+1):T, (t+1):T} - \Sigma_{(t+1):T, 1:t}\Sigma^{-1}_{1:t,1:t}\Sigma_{1:t, (t+1):T}\right)
 \end{align}
 $$
 
@@ -98,16 +104,16 @@ Then, when visualizing the trajectories and computing the outcome probabilities,
 
 #### Specifying the Prior Mean
 
-A key element in our model is the prior mean $\boldsymbol{\mu}^{r}_{t},$ which represents the point on the field where we might reasonably expect the receiver will be in frame $t$ before the play begins.
-If we had access to the offense's playbook, we could very easily compute the prior mean for each play; after all, $\boldsymbol{\mu}^{r}_{t}$ is where the receiver is meant to be at time $t$ based on the route concept and play design.
-Lacking such information and only knowing (i) the receiver's starting locaiton and (ii) where the ball lands, we set $\boldsymbol{\mu}^{r}_{1:T}$ to be the set of equally spaced points lying on a straight-line path between the receiver's initial position and the ball's landing location.
-In doing so, we view $\boldsymbol{\mu}_{1:T}$ as a regularization target rather than a perfectly accurate representation of our prior knowledge.
-The posterior "pulls" or "shrinks" the simulated trajectory $\boldsymbol{r}_{(t+1):T}$ towards the prior mean trajectory $\boldsymbol{\mu}^{r}_{(t+1):T}.$
+A key element in our model is the prior mean $\mu^r_t$ which represents the point on the field where we might reasonably expect the receiver will be in frame $t$ before the play begins.
+If we had access to the offense's playbook, we could very easily compute the prior mean for each play; after all, $\mu^r_t$ is where the receiver is meant to be at time $t$ based on the route concept and play design.
+Lacking such information and only knowing (i) the receiver's starting locaiton and (ii) where the ball lands, we set $\mu^r_{1:T}$ to be the set of equally spaced points lying on a straight-line path between the receiver's initial position and the ball's landing location.
+In doing so, we view $\mu_{1:T}$ as a regularization target rather than a perfectly accurate representation of our prior knowledge.
+The posterior "pulls" or "shrinks" the simulated trajectory $r_{(t+1):T}$ towards the prior mean trajectory $\mu^{r}_{(t+1):T}.$
 The influence of the prior mean on simulated trajectories is greater earlier in a play (i.e., when $t$ is small and we have not observed much data) than later in the play (i.e., when $t$ is large and we have seen most of the route develop).
 In practice, we have found that this arguably over-simplified prior specification works well. 
 
 To illustrate this point, we simulated CeeDee Lamb's trajectores from the moment the ball was thrown in the play shown earlier using two different prior specificiations.
-The red trajectores were generated when we specified the constant prior $\boldsymbol{\mu}^{r}_{t} = \boldsymbol{r}_{1}$ for each $t = 1, \ldots, T.$
+The red trajectores were generated when we specified the constant prior $\mu^r_{t} = r_{1}$ for each $t = 1, \ldots, T.$
 According to this prior, the receiver remains fixed at his initial position for the duration of the play.
 We see that the red posterior trajectories after 28 frames have Lamb circling back towards his initial position.
 
