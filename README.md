@@ -1,6 +1,6 @@
 # Bayesian Dynamic Completion Probabilities
 
-## Motiviation
+## Overview
 
 One of the earliest uses of Next Generation Stats tracking data was estimating the probability that a receiver successfully catches a pass.
 Completion probabilities models are useful for player evaluation, allowing analysts and teams to quantify precisely how much credit or blame a receiver should get based for the outcome of an individual pass. Intuitively, a receiver who catches a ball with very low completion probability should receive much more credit than a receiver who catches a routine pass with high completion probability.
@@ -9,12 +9,11 @@ Such intuition is encoded in the now-familiar catch probability over expected (C
 
 Completion probability models can also make replay videos more informative, engaging, and entertaining. One can, for instance, identify the completed pass with lowest completion probability within a game, week, or season; in some sense, this is would be most improbable catch within that fixed time window. One can then overlay the final completion probability on top of a video replay to communicate how improbable a particular reception was. Going further, one can cut the video to display multiple camera angles and overlay the values of several important model inputs (e.g., air yards, quarterback speed, receiver-defender separation) onto the screen. Such displays provide insight into what, precisely, made the catch so difficult.
 
-In fact, NFL, NGS, and the NFL's broadcast partners produced and released several such videos in the 2018 season, with some even being run during commercial breaks during game.
+In fact, the NFL produced and released several such videos in the 2018 season, with some even being run during commercial breaks during game.
 For instance, [here is video package](https://www.nfl.com/videos/next-gen-stats-three-improbable-catches-week-1-258398) of three most improbable completions from Week 1 of the 2018 season.
 While these videos are unquestionably informative, engaging, and entertaining, they are fundamentally static: with one exception (viz., quarterback speed), the figures overlaid on the screen are fixed at their final values.
 Such static elements in an otherwise dynamic display can create the perception that what happens when the ball is in the air does not affect the final completion probability.
 In this project, we develop a framework for producing dynamic completion probability forecasts that allows viewers to track how the probabilities of a completion, incompletion, and interception, evolve as the receiver and defender move when the ball is in the air.
-
 
 Our model combines a model trained to predict pass outcomes (i.e., the `pass_result` variable supplied by the Big Data Bowl) using features measured at the time of pass (e.g., quarterback speed) and at the time that the ball arrives in the receiver's vicinity with a simple Bayesian of receiver and defender trajectories.
 As documented by [Deshpande and Evans (2019)]()https://arxiv.org/abs/1910.12337 using data from the 2019 Big Data Bowl competition, the most important drivers of completion probability are the time-of-arrival variables, which can be computed using the player locations in the final frame of each play. 
@@ -25,6 +24,21 @@ Thus, in each frame of a play, we (i) simulate the remaining trajectories from t
 Averaging over 1000 simulated trajectories, we obtain an estimate for the different outcome probabilities based only on the observed trajectories.
 
 
+
+## Example Output
+
+Using our framework, we can create animations showing how the uncertainty about player movement and pass outcome probabilities evolves over the course of a play.
+Here are three examples from the 2023 NFL regular season.
+
+
+**CeeDee Lamb Reception on 4th-and-1**
+
+<figure>
+  <img src="figures/ceedee_paths.gif" width=400>
+  <img src="figures/ceedee_probs.gif" width=400>
+</figure>
+
+<!--
 
 ## Outcome Probability Model
 
@@ -157,4 +171,4 @@ Importantly for broadcasters, our model admits very fast, exact posterior calcul
 Later, we outline potential extensions that relax these assumptions, albeit at higher computational cost. 
 The modularity of our framework allows one to substitute any other Bayesian model of player trajectories and still produce engaging and informative visualizations. 
 
-
+-->
