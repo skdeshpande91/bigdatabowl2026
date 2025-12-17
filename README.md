@@ -31,12 +31,39 @@ Using our framework, we can create animations showing how the uncertainty about 
 Here are three examples from the 2023 NFL regular season.
 
 
-**CeeDee Lamb Reception on 4th-and-1**
+**CeeDee Lamb Reception**
 
 <figure>
-  <img src="figures/ceedee_paths.gif" width=400>
-  <img src="figures/ceedee_probs.gif" width=400>
+  <img src="figures/ceedee_paths.gif" width=300>
+  <img src="figures/ceedee_probs.gif" width=300>
 </figure>
+
+**Malik Hooker Interception**
+
+<figure>
+  <img src="figures/hooker_paths.gif" width=300>
+  <img src="figures/hooker_probs.gif" width=300>
+</figure>
+
+**DaRon Bland Interception**
+
+<figure>
+  <img src="figures/bland_paths.gif", width=300>
+  <img src="figures/bland_probs.gif", width=300>
+</figure>
+
+
+## Code Organization
+
+The code to generate the figures above and those in the corresponding submission for the Big Data Bowl are contained in the `scripts` directory.
+If you wish to reproduce the analysis, you must first download the CSV files from the competition into the subdirectory `data/training`.
+Then run the script `scripts/prepare_data.R`, which extracts the tracking data for the targeted receiver and defender for each play and saves it in the file `data/raw_data.RData`.
+
+The script `scripts/fit_rf_model.R` fits the random forests for pass outcomes and saves the fitted model in the file `data/rf_model.RData`.
+To produce the animations for the Bland and Hooker interceptions, you can then run `scripts/bland_animations.R` and `scripts/hooker_animations.R`. 
+To generate the animations for the Lamb reception, you need to first run `scripts/prepare_ceedee_path.R` before running `scripts/ceedee_animations.R`.
+
+The `scripts` directory also includes scripts for generating single-frame images from the Big Data Bowl submissions.
 
 <!--
 
